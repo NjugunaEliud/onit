@@ -68,7 +68,7 @@ const Header = (props: {
 
         <div className="hidden xl:block">
           <div>
-           <p className="text-lg dark:text-white">TBL GO GREEN LOTTERY</p>
+           <p className="text-lg dark:text-white"> Onit Bank Pay Bill APP</p>
           </div>
         </div>
 

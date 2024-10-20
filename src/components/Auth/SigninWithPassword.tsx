@@ -219,7 +219,7 @@ export default function SigninWithPassword() {
         <button
           type="submit"
           onClick={(e) => handleLogin(e)}
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-btnColor p-4 font-medium text-white transition hover:bg-opacity-90"
+          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#056cf2] p-4 font-medium text-white transition hover:bg-opacity-90"
         >
           Sign In
         </button>

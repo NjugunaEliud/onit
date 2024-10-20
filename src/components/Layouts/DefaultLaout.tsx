@@ -86,12 +86,12 @@ export default function DefaultLayout({
             <div className="mx-auto mb-10 max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               {children}
             </div>
-            {/* <footer className="fixed w-full bottom-0 grid items-center justify-start gap-20 py-8 bg-white shadow-1 p-4 dark:border-stroke-dark dark:bg-gray-dark">
+            <footer className="fixed w-full bottom-0 grid items-center justify-start gap-20 py-8 bg-white shadow-1 p-4 dark:border-stroke-dark dark:bg-gray-dark">
               <div className="flex justify-between w-full text-black dark:text-white">
-                <p className="mr-10">&copy; Copyright  TBL GO GREEN LOTTERY <span id="year">{year}</span></p>
+                <p className="mr-10">&copy; Copyright   Onit Bank Pay Bill APP <span id="year">{year}</span></p>
                 
               </div>
-            </footer> */}
+            </footer>
           </main>
           {/* <!-- ===== Main Content End ===== --> */}
         </div>

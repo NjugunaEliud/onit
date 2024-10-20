@@ -8,7 +8,7 @@ import Signin from "@/components/Auth/Signin";
 export default function page() {
   
   return (
-    <div className="px-10 flex justify-center  py-20 items-center">
+    <div className=" flex justify-center  py-20 items-center">
     {/* <Breadcrumb pageName="Sign In" /> */}
     <div className="rounded-[10px] w-3/4 bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="flex flex-wrap items-center">
@@ -19,23 +19,8 @@ export default function page() {
         </div>
 
         <div className="hidden w-full p-7.5 xl:block xl:w-1/2">
-          <div className="custom-gradient-1 overflow-hidden rounded-2xl px-12.5 pt-12.5 dark:!bg-dark-2 dark:bg-none">
-            {/* <Link className="mb-10 inline-block" href="/">
-              <Image
-                className="hidden dark:block"
-                src={"/images/logo/logo.png"}
-                alt="Logo"
-                width={100}
-                height={32}
-              />
-              <Image
-                className="dark:hidden"
-                src={"/images/logo/logo.png"}
-                alt="Logo"
-                width={100}
-                height={32}
-              />
-            </Link> */}
+          <div className="custom-gradient-1 overflow-hidden rounded-2xl  pt-12.5 dark:!bg-dark-2 dark:bg-none">
+            <div className="px-12.5">
             <p className="mb-3 text-xl font-medium text-dark dark:text-white">
               Sign in to your account
             </p>
@@ -48,14 +33,14 @@ export default function page() {
               Please sign in to your account by completing the necessary
               fields below
             </p>
-
-            <div className="mt-31">
+            </div>
+            <div className="mt-8">
               <Image
-                src={"/images/grids/grid-02.svg"}
+                src={"/images/grids/login.png"}
                 alt="Logo"
-                width={405}
-                height={325}
-                className="mx-auto dark:opacity-30"
+                width={505}
+                height={225}
+                className="mx-auto dark:opacity-30 rounded-lg"
               />
             </div>
           </div>

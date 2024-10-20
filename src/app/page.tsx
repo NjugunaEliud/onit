@@ -5,7 +5,7 @@ import React from "react";
 
 export const metadata: Metadata = {
   title:
-    "Go Green",
+    "Onit Bank",
 };
 
 export default function Home() {

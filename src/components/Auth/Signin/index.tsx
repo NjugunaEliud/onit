@@ -12,14 +12,14 @@ export default function Signin() {
       <Link className="mb-10 inline-block" href="/">
               <Image
                 className="hidden dark:block"
-                src={"/images/logo/logo.png"}
+                src={"/images/logo/onit.svg"}
                 alt="Logo"
                 width={100}
                 height={32}
               />
               <Image
                 className="dark:hidden"
-                src={"/images/logo/logo.png"}
+                src={"/images/logo/onit.svg"}
                 alt="Logo"
                 width={170}
                 height={32}
