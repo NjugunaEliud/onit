@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Filter } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import DefaultLayout from '@/components/Layouts/DefaultLaout';
 
 const Dashboard = () => {
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
@@ -48,7 +49,7 @@ const Dashboard = () => {
   const periods = ['24 hrs', '7 Days', '30 Days', '12 Months'];
 
   return (
-    
+    <DefaultLayout>
       <div className="p-4 sm:p-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -141,7 +142,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    
+    </DefaultLayout>
   );
 };
 
