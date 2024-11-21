@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import DefaultLayout from '@/components/Layouts/DefaultLaout';
@@ -13,6 +13,7 @@ interface Errors {
 }
 
 const CompanyUserForm: React.FC = () => {
+  
     const [formData, setFormData] = useState({
         company_id: '',
         email: '',
@@ -37,7 +38,18 @@ const CompanyUserForm: React.FC = () => {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
+    
+    useEffect(() => {
+        const companyId = window.localStorage.getItem("companyId");
 
+        if (companyId) {
+            setFormData((prevData) => ({
+                ...prevData,
+                company_id: companyId,
+            }))}
+
+        // console.log("Company ID:", companyId);
+    })
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
@@ -66,7 +78,7 @@ const CompanyUserForm: React.FC = () => {
                     email: '',
                     password: '',
                     phone: '',
-                    role: 'admin',
+                    role: '',
                     is_active: true,
                 });
             }

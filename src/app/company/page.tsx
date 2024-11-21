@@ -69,7 +69,8 @@ export default function CompanyPage() {
   };
 
   // Helper function to display the masked key
-  const maskKey = (key: string) => `${key.slice(0, 4)}${'*'.repeat(10)}`;
+  const maskKey = (key: string | undefined) => key ? `${key.slice(0, 4)}${'*'.repeat(10)}` : '';
+
 
   return (
     <DefaultLayout>

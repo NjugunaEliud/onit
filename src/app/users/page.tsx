@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import DefaultLayout from '@/components/Layouts/DefaultLaout';
+import Link from 'next/link';
+import axios from 'axios';
 
 interface User {
-  userId: string;
-  firstName: string;
+  id: string;
   lastName: string;
   email: string;
   phone: string;
@@ -14,43 +15,43 @@ interface User {
   status: string;
 }
 
-const dummyUsers: User[] = [
-  {
-    userId: '093443',
-    firstName: 'Mwaura',
-    lastName: 'Kimani',
-    email: 'email@email.com',
-    phone: '+254 719 445 637',
-    accountNumber: 'N/A',
-    accountType: 'Company Account',
-    status: 'Active'
-  },
-  {
-    userId: '093443',
-    firstName: 'Mwaura',
-    lastName: 'Kimani',
-    email: 'email@email.com',
-    phone: '+254 719 445 637',
-    accountNumber: '0000000',
-    accountType: 'Wallet Account',
-    status: 'Active'
-  }
-];
-
 const Users: React.FC = () => {
   const [accountTypeFilter, setAccountTypeFilter] = useState('Wallet');
   const [statusFilter, setStatusFilter] = useState('Active');
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(4);
+  const [users, setUsers] = useState<User[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const filteredData = dummyUsers.filter((item) =>
+  useEffect(() => {
+    const company_id = window.localStorage.getItem("companyId");
+
+    if (company_id) {
+      axios.get(`https://us-central1-onit-439704.cloudfunctions.net/company-users?company_id=${company_id}`)
+        .then((response) => {
+          console.log("Response", response.data.payload);
+          setUsers(response.data.payload);
+        })
+        .catch((error) => {
+          console.error("Error fetching company users:", error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      console.error("No company ID found in localStorage.");
+      setLoading(false);
+    }
+  }, []);
+
+  const filteredData = users?.filter((item) =>
     Object.values(item).some(
       (value) =>
         value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
-  );
+  ) || [];
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -61,9 +62,15 @@ const Users: React.FC = () => {
     setCurrentPage(pageNumber);
   };
 
+  if (loading) {
+    return <div>Loading...</div>; // You can add a spinner or loading message here
+  }
+
   return (
     <DefaultLayout>
-      <div className="min-h-screen  dark:bg-gray-900 px-4 md:px-6">
+      <div className="min-h-screen dark:bg-gray-900 px-4 md:px-6">
+        <Link className="px-4 py-2 text-sm border rounded-md text-white bg-blue-500" href="/createusers"> Add Users</Link>
+
         <div className="mt-4 md:mt-6">
           <div className="rounded-lg bg-white px-6 py-4 shadow-md dark:bg-gray-dark dark:shadow-lg">
             <h4 className="mb-4 text-xl font-bold text-dark dark:text-white md:text-2xl">
@@ -112,7 +119,8 @@ const Users: React.FC = () => {
                 <thead>
                   <tr className="bg-gray-100 dark:bg-gray-800">
                     <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">User ID</th>
-                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Name</th>
+                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Phone</th>
+                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Email</th>
                     <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Contact</th>
                     <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Account Number</th>
                     <th className="px-4 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Account Type</th>
@@ -122,16 +130,19 @@ const Users: React.FC = () => {
                 <tbody>
                   {currentItems.map((user, index) => (
                     <tr key={index} className={index % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800'}>
-                      <td className="px-4 py-4 text-sm font-medium text-gray-900 dark:text-white">{user.userId}</td>
+                      <td className="px-4 py-4 text-sm font-medium text-gray-900 dark:text-white">{user.id}</td>
                       <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
-                        <div>{user.firstName} {user.lastName}</div>
+                        <div>{user.phone}</div>
+                        {/* <div>{user.phone}</div> */}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
                         <div>{user.email}</div>
-                        <div>{user.phone}</div>
+                        {/* <div>{user.phone}</div> */}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{user.accountNumber}</td>
                       <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{user.accountType}</td>
+                      <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{user.status}</td>
+                      <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{user.status}</td>
                       <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{user.status}</td>
                     </tr>
                   ))}
@@ -145,11 +156,10 @@ const Users: React.FC = () => {
                 <button
                   key={index}
                   onClick={() => handlePageChange(index + 1)}
-                  className={`mx-1 px-3 py-1 text-sm ${
-                    currentPage === index + 1
+                  className={`mx-1 px-3 py-1 text-sm ${currentPage === index + 1
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 text-black dark:bg-gray-700 dark:text-white"
-                  } rounded`}
+                    } rounded`}
                 >
                   {index + 1}
                 </button>

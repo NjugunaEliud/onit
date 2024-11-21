@@ -1,137 +1,110 @@
 "use client";
-import React, { useState ,useEffect} from "react";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
 import { Visibility, VisibilityOff } from '@mui/icons-material'; 
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Toaster, toast } from 'react-hot-toast';
 import { useRouter } from "next/navigation";
 
-
-
-export default function SigninWithPassword() {
+export default function SigninWithPhone() {
   const [data, setData] = useState({
     remember: false,
   });
   const [showPassword, setShowPassword] = useState<boolean>(false); 
-  const [email, setEmail] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [rememberme, setRememberMe] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-  useEffect(()=>{
-   const email =  window.localStorage.getItem("adminEmail");
-   const password = window.localStorage.getItem("adminPassword");
-   if(email && password){
-    setEmail(JSON.parse(email));
-    setPassword(password);
-    setRememberMe(true);
-   }
-  },[])
-  const handleLogin = async (e: any) => {
-    if (!email) {
+
+  useEffect(() => {
+    const storedPhone = window.localStorage.getItem("adminPhone");
+    const storedPassword = window.localStorage.getItem("adminPassword");
+    if (storedPhone && storedPassword) {
+      setPhone(JSON.parse(storedPhone));
+      setPassword(storedPassword);
+      setRememberMe(true);
+    }
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    // Validate phone input
+    if (!phone) {
       Swal.fire({
         icon: "info",
-        iconColor: "#53b94c",
-        text: `email is required`,
-        width: 600,
-        padding: "3em",
-        color: "black",
-        background: "#fff",
+        text: `Phone number is required`,
         confirmButtonColor: "#53b94c",
-        showConfirmButton: true,
-        backdrop: `
-          rgba(83, 185, 76,0.4)
-          url("/images/logo/logos.png")
-          left top
-          no-repeat
-        `,
       });
       return;
     }
+
+    // Validate password input
     if (!password) {
       Swal.fire({
         icon: "info",
-        iconColor: "#53b94c",
-        text: `password is required`,
-        width: 600,
-        padding: "3em",
-        color: "black",
-        background: "#fff",
+        text: `Password is required`,
         confirmButtonColor: "#53b94c",
-        showConfirmButton: true,
-        backdrop: `
-          rgba(83, 185, 76,0.4)
-          url("/images/logo/logos.png")
-          left top
-          no-repeat
-        `,
       });
       return;
     }
+
     e.preventDefault();
+
+    setLoading(true)
     try {
-      const  response  =  await axios.post('https://us-central1-go-green-436010.cloudfunctions.net/subadmin_auth',{
-        email: email,
+      const response = await axios.post('https://us-central1-onit-439704.cloudfunctions.net/signin', {
+        phone: phone,
         password: password,
-    
       });
-      if(response.data.statusCode == 200){
-        toast.success(`Welcome Back ${response.data.payload.name}!`, {
+
+      // Check if response contains payload and token
+      if (response.data && response.data.payload && response.data.payload.token) {
+        toast.success(`Welcome Back ${response.data.payload.user.role}!`, {
           icon: '👏',
         });        
-        if(rememberme == true){
-          window.localStorage.setItem("adminEmail",JSON.stringify(response.data.payload.email));
-          window.localStorage.setItem("adminPassword",password);
+
+        // Remember me functionality
+        if (rememberme) {
+          window.localStorage.setItem("adminPhone", JSON.stringify(response.data.payload.user.phone));
+          window.localStorage.setItem("adminPassword", password);
         }
-        window.localStorage.setItem('AdminData', JSON.stringify(response.data.payload));
-        if(response.data.payload.utype=="admin"){
+
+        // window.localStorage.setItem('AdminData', JSON.stringify(response.data.payload.user));
+        window.localStorage.setItem('token', response.data.payload.token);
+        window.localStorage.setItem('companyId', response.data.payload.user.company_id);
+        window.localStorage.setItem('email', response.data.payload.user.email);
+        window.localStorage.setItem('phone', response.data.payload.user.phone);
+        window.localStorage.setItem('role', response.data.payload.user.role);
+
+        // Route based on user role
+        if (response.data.payload.user.role === "companyAdmin") {
           router.push('/');
+        } else {
+          router.push('/dashboard');
         }
-        if(response.data.payload.utype=="subadmin"){
-          router.push('/');
-        }
-      }
-      else{
+      } else {
         Swal.fire({
           icon: "error",
-          iconColor: "#53b94c",
-          text: `Something wrong happened`,
-          width: 600,
-          padding: "3em",
-          color: "black",
-          background: "#fff",
+          text: `Login failed: Invalid response from server`,
           confirmButtonColor: "red",
-          showConfirmButton: true,
-          backdrop: `
-            rgba(83, 185, 76,0.4)
-            url("/images/logo/logos.png")
-            left top
-            no-repeat
-          `,
         });
-
       }
-      
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        iconColor: "#53b94c",
-        text: `please check your internet`,
-        width: 600,
-        padding: "3em",
-        color: "black",
-        background: "#fff",
-        confirmButtonColor: "red",
-        showConfirmButton: true,
-        backdrop: `
-          rgba(83, 185, 76,0.4)
-          url("/images/logo/logos.png")
-          left top
-          no-repeat
-        `,
-      });
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.message || 'Login failed';
+        Swal.fire({
+          icon: "error",
+          text: errorMessage,
+          confirmButtonColor: "red",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          text: `Login error: Please check your internet connection`,
+          confirmButtonColor: "red",
+        });
+      }
     } 
-    
   };
 
   const togglePasswordVisibility = () => {
@@ -143,18 +116,18 @@ export default function SigninWithPassword() {
       <Toaster/>
       <div className="mb-4">
         <label
-          htmlFor="email"
+          htmlFor="phone"
           className="mb-2.5 block font-medium text-dark dark:text-white"
         >
-          Email
+          Phone Number
         </label>
         <div className="relative">
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            name="email"
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Enter your phone number"
+            name="phone"
             className="w-full rounded-lg border border-stroke bg-transparent py-[15px] pl-6 pr-11 font-medium text-dark outline-none focus:border-btnColor active:border-btnColor focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
           />
         </div>
@@ -219,9 +192,9 @@ export default function SigninWithPassword() {
         <button
           type="submit"
           onClick={(e) => handleLogin(e)}
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#056cf2] p-4 font-medium text-white transition hover:bg-opacity-90"
+          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-btnColor p-4 font-medium text-white transition hover:bg-opacity-90"
         >
-          Sign In
+          {!loading ? 'Sign In' : 'Signing in ...'}
         </button>
       </div>
     </form>

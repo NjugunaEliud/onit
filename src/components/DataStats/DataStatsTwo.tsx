@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import Link from 'next/link';
 
 const DataStatsTwo = () => {
   const accounts = Array(3).fill({
@@ -12,9 +13,9 @@ const DataStatsTwo = () => {
     <div className="w-full  mx-auto">
       <p className='text-2xl font-semibold mb-2'>Bank Accounts</p>
       <div className="flex justify-between items-center mb-6">
-        <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">
-          Add
-        </button>
+     
+         <Link className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50" href="/createaccount"> Add Account</Link>
+       
         <div className="relative">
           <input 
             type="text"
