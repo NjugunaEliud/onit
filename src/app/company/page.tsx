@@ -1,28 +1,52 @@
-"use client"
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import DefaultLayout from '@/components/Layouts/DefaultLaout';
+"use client";
+import React, { useState, useEffect } from "react";
+import { Copy, Key, Trash2, Calendar } from "lucide-react";
+import axios from "axios";
+import Swal from "sweetalert2";
+import DefaultLayout from "@/components/Layouts/DefaultLaout";
 
-// Define the interface for app data
 interface ApiKey {
-  id: string;
   company_id: string;
-  key: string;
-  is_active: boolean;
+  consumer_key: string;
+  consumer_secret: string;
   created_at: string;
   expires_at: string;
 }
 
-export default function CompanyPage() {
-  const [activeTab, setActiveTab] = useState('Company Details');
+interface CompanyInfo {
+  companyId: string;
+  name: string;
+  regNo: string;
+  phone: string;
+  email: string;
+  address: string;
+}
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString.replace(" ", "T")); 
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const Dashboard = () => {
+  const [activeTab, setActiveTab] = useState<"companyInfo" | "apiKeys">("companyInfo");
   const [apps, setApps] = useState<ApiKey[]>([]);
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const companyId = window.localStorage.getItem("companyId");
+
     const fetchApps = async () => {
       try {
-        const companyId = '1srNPims4qAy2nFuivwN';
-        const response = await axios.get(`https://us-central1-onit-439704.cloudfunctions.net/api_keys?company_id=${companyId}`);
+        const response = await axios.get(
+          `https://us-central1-onit-439704.cloudfunctions.net/api_keys?company_id=${companyId}`
+        );
         setApps(response.data.payload);
       } catch (error) {
         console.error("Error fetching apps:", error);
@@ -30,146 +54,218 @@ export default function CompanyPage() {
       }
     };
 
+    const fetchCompanyInfo = async () => {
+      try {
+        const response = await axios.get(
+          `https://us-central1-onit-439704.cloudfunctions.net/company?company_id=${companyId}`
+        );
+        setCompanyInfo(response.data.payload);
+      } catch (error) {
+        console.error("Error fetching company info:", error);
+      }
+    };
+
     fetchApps();
+    fetchCompanyInfo();
   }, []);
 
   const handleAddApp = async () => {
+    const companyId = window.localStorage.getItem("companyId");
     setLoading(true);
     try {
-      const companyId = '1srNPims4qAy2nFuivwN';
-      const response = await axios.post<ApiKey>('https://us-central1-onit-439704.cloudfunctions.net/api_keys', {
-        company_id: companyId,
-        name: 'New App',
-      });
-
+      const response = await axios.post(
+        "https://us-central1-onit-439704.cloudfunctions.net/api_keys",
+        {
+          company_id: companyId,
+        }
+      );
       setApps([...apps, response.data]);
-      console.log("Response Api Key", response.data);
+      showToast("success", "API Keys Generated Successfully!");
     } catch (error) {
       console.error("Error creating new app:", error);
+      showToast("error", "Failed to generate API keys");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDeleteApp = async (appId: string) => {
+  const handleDeleteApp = async (companyId: string) => {
     try {
-      await axios.delete(`https://us-central1-onit-439704.cloudfunctions.net/api_keys?id=${appId}`);
-      setApps(apps.filter(app => app.id !== appId));
+      await axios.delete(
+        `https://us-central1-onit-439704.cloudfunctions.net/api_keys?company_id=${companyId}`
+      );
+      setApps(apps.filter((app) => app.company_id !== companyId));
+      showToast("success", "API Key deleted successfully");
     } catch (error) {
       console.error("Error deleting app:", error);
+      showToast("error", "Failed to delete API key");
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert("Copied to clipboard!");
-    }).catch(err => {
-      console.error('Failed to copy: ', err);
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => showToast("success", `${label} copied to clipboard!`))
+      .catch(() => showToast("error", "Failed to copy to clipboard"));
+  };
+
+  const showToast = (type: "success" | "error", message: string) => {
+    Swal.fire({
+      icon: type,
+      title: message,
+      toast: true,
+      position: "center",
+      showConfirmButton: false,
+      timer: 2000,
     });
   };
 
-  // Helper function to display the masked key
-  const maskKey = (key: string | undefined) => key ? `${key.slice(0, 4)}${'*'.repeat(10)}` : '';
-
-
   return (
     <DefaultLayout>
-      <div className="min-h-screen bg-background">
-        <div className="mx-auto p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-xl font-bold">Company</h1>
+      <div className=" mx-auto bg-white p-6 rounded-lg shadow-md">
+        {/* Tabs */}
+        <div className="flex border-b mb-6">
+          <button
+            className={`py-2 px-4 text-sm font-medium ${
+              activeTab === "companyInfo" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"
+            }`}
+            onClick={() => setActiveTab("companyInfo")}
+          >
+            Company Info
+          </button>
+          <button
+            className={`py-2 px-4 text-sm font-medium ${
+              activeTab === "apiKeys" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"
+            }`}
+            onClick={() => setActiveTab("apiKeys")}
+          >
+            API Keys
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === "companyInfo" && (
+          <div>
+            <h2 className="text-xl font-semibold mb-4">Company Information</h2>
+            {companyInfo ? (
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-600">Name</h3>
+                  <p className="text-lg">{companyInfo.name}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-gray-600">Registration No.</h3>
+                  <p className="text-lg">{companyInfo.regNo}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-gray-600">Phone</h3>
+                  <p className="text-lg">{companyInfo.phone}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-gray-600">Email</h3>
+                  <p className="text-lg">{companyInfo.email}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-gray-600">Address</h3>
+                  <p className="text-lg">{companyInfo.address}</p>
+                </div>
+              </div>
+            ) : (
+              <p>Loading company information...</p>
+            )}
           </div>
+        )}
 
-          <nav className="flex border-b border-gray-300 mb-4">
-            <button
-              onClick={() => setActiveTab('Company Details')}
-              className={`px-4 py-2 font-semibold ${activeTab === 'Company Details' ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}
-            >
-              Company Details
-            </button>
-            <button
-              onClick={() => setActiveTab('API')}
-              className={`px-4 py-2 font-semibold ${activeTab === 'API' ? 'border-b-2 border-black text-black' : 'text-gray-500'}`}
-            >
-              API
-            </button>
-          </nav>
+        {activeTab === "apiKeys" && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold">API Keys</h2>
+              <button
+                onClick={handleAddApp}
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+              >
+                <Key className="w-4 h-4" />
+                {loading ? "Generating..." : "Generate New API Keys"}
+              </button>
+            </div>
 
-          {activeTab === 'Company Details' && (
-            <form className="p-4 border border-gray-300 rounded">
-              <div className="flex flex-col md:flex-row md:items-center mb-4">
-                <label htmlFor="businessTitle" className="md:w-48 font-semibold text-gray-700 mb-2 md:mb-0">
-                  Your Business Title
-                </label>
-                <input
-                  type="text"
-                  id="businessTitle"
-                  name="businessTitle"
-                  className="flex-1 p-2 bg-gray-200 border-none rounded focus:outline-none"
-                />
-              </div>
-
-              <div className="flex flex-col md:flex-row md:items-start">
-                <label htmlFor="businessAddress" className="md:w-48 font-semibold text-gray-700 mb-2 md:mb-0">
-                  Your Business Address
-                </label>
-                <textarea
-                  id="businessAddress"
-                  name="businessAddress"
-                  rows={4}
-                  className="flex-1 p-2 border-none bg-gray-200 rounded focus:outline-none resize-none"
-                ></textarea>
-              </div>
-            </form>
-          )}
-
-          {activeTab === 'API' && (
-            <div className="border border-gray-300 rounded-lg p-6">
-              <div className="mb-6">
-                <button
-                  onClick={handleAddApp}
-                  className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
-                  disabled={loading}
-                >
-                  {loading ? 'Adding...' : 'Add'}
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {apps.length > 0 ? (
-                  apps.map((app) => (
-                    <div key={app.id} className="border border-gray-300 rounded-lg p-6">
-                      <h3 className="text-lg font-semibold mb-4">API Key</h3>
-                      <div className="space-y-4">
-                        <div className="flex flex-col space-y-1">
-                          <span className="text-sm font-medium text-gray-700">Key</span>
-                          <div className="p-2 bg-gray-100 rounded text-sm flex justify-between items-center">
-                            {maskKey(app.key)}
-                            <button onClick={() => copyToClipboard(app.key)} className="ml-2 text-blue-500">Copy</button>
-                          </div>
-                        </div>
+            <div className="grid grid-cols-1 gap-6">
+              {apps.map((app) => (
+                <div key={app.company_id} className="border-2 rounded-lg p-6 bg-white">
+                  <div className="border-b pb-4 mb-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-lg font-semibold flex items-center gap-2">
+                          <Key className="w-5 h-5" />
+                        </h3>
                       </div>
-                      <div className="flex gap-2 mt-4">
-                        <button className="flex-1 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">
-                          Reset
-                        </button>
-                        <button
-                          className="flex-1 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
-                          onClick={() => handleDeleteApp(app.id)}
-                        >
-                          Delete
-                        </button>
+                      <span className="inline-block mt-2 px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                          Active
+                        </span>
+                      <button
+                        onClick={() => handleDeleteApp(app.company_id)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <KeyDisplay
+                      label="Consumer Key"
+                      value={app.consumer_key}
+                      onCopy={() => copyToClipboard(app.consumer_key, "Consumer Key")}
+                    />
+                    <KeyDisplay
+                      label="Consumer Secret"
+                      value={app.consumer_secret}
+                      onCopy={() => copyToClipboard(app.consumer_secret, "Consumer Secret")}
+                    />
+
+                    <div className="mt-4 grid grid-cols-2 gap-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>Created: {formatDate(app.created_at)}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>Expires: {formatDate(app.expires_at)}</span>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="text-center text-gray-500">No key available</div>
-                )}
-              </div>
+                  </div>
+                </div>
+              ))}
+
+              {apps.length === 0 && (
+                <div className="border-2 border-dashed rounded-lg p-12 text-center">
+                  <Key className="w-8 h-8 text-gray-300 mx-auto" />
+                  <p className="mt-4 text-gray-500">No API keys found.</p>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </DefaultLayout>
   );
-}
+};
+
+const KeyDisplay = ({ label, value, onCopy }: { label: string; value: string; onCopy: () => void }) => {
+  const maskKey = (key: string) => key.length > 16 ? `${key.slice(0, 8)}...${key.slice(-8)}` : key;
+
+  return (
+    <div>
+      <h3 className="text-sm font-medium text-gray-600">{label}</h3>
+      <div className="flex items-center justify-between gap-4">
+        <p className="text-lg font-mono">{maskKey(value)}</p>
+        <button onClick={onCopy} className="p-2 text-blue-600 hover:bg-blue-50 rounded-md">
+          <Copy className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;

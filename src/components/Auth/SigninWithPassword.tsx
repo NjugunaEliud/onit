@@ -57,31 +57,26 @@ export default function SigninWithPhone() {
         password: password,
       });
 
-      // Check if response contains payload and token
       if (response.data && response.data.payload && response.data.payload.token) {
         toast.success(`Welcome Back ${response.data.payload.user.role}!`, {
           icon: '👏',
         });        
 
-        // Remember me functionality
         if (rememberme) {
           window.localStorage.setItem("adminPhone", JSON.stringify(response.data.payload.user.phone));
           window.localStorage.setItem("adminPassword", password);
         }
 
-        // window.localStorage.setItem('AdminData', JSON.stringify(response.data.payload.user));
+        window.localStorage.setItem('AdminData', JSON.stringify(response.data.payload.user));
         window.localStorage.setItem('token', response.data.payload.token);
         window.localStorage.setItem('companyId', response.data.payload.user.company_id);
         window.localStorage.setItem('email', response.data.payload.user.email);
         window.localStorage.setItem('phone', response.data.payload.user.phone);
         window.localStorage.setItem('role', response.data.payload.user.role);
 
-        // Route based on user role
-        if (response.data.payload.user.role === "companyAdmin") {
+  
           router.push('/');
-        } else {
-          router.push('/dashboard');
-        }
+ 
       } else {
         Swal.fire({
           icon: "error",

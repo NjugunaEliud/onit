@@ -63,7 +63,37 @@ const Users: React.FC = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // You can add a spinner or loading message here
+    return (
+      <div className="flex items-center justify-center h-screen">
+        {/* Loader Spinner */}
+        <div className="loader border-t-4 border-b-4 border-blue-500 rounded-full w-16 h-16 animate-spin"></div>
+        <p className="ml-6 flex space-x-1">
+          <span className="inline-block animate-wave">P</span>
+          <span className="inline-block animate-wave delay-[100ms]">l</span>
+          <span className="inline-block animate-wave delay-[200ms]">e</span>
+          <span className="inline-block animate-wave delay-[300ms]">a</span>
+          <span className="inline-block animate-wave delay-[400ms]">s</span>
+          <span className="inline-block animate-wave delay-[500ms]">e</span>
+          <span className="inline-block animate-wave delay-[600ms]"> </span>
+          <span className="inline-block animate-wave delay-[700ms]">w</span>
+          <span className="inline-block animate-wave delay-[800ms]">a</span>
+          <span className="inline-block animate-wave delay-[900ms]">i</span>
+          <span className="inline-block animate-wave delay-[1000ms]">t</span>
+          <span className="inline-block animate-wave delay-[1100ms]"> </span>
+          <span className="inline-block animate-wave delay-[1200ms]">f</span>
+          <span className="inline-block animate-wave delay-[1300ms]">o</span>
+          <span className="inline-block animate-wave delay-[1400ms]">r</span>
+          <span className="inline-block animate-wave delay-[1500ms]"> </span>
+          <span className="inline-block animate-wave delay-[1600ms]">w</span>
+          <span className="inline-block animate-wave delay-[1700ms]">h</span>
+          <span className="inline-block animate-wave delay-[1800ms]">i</span>
+          <span className="inline-block animate-wave delay-[1900ms]">l</span>
+          <span className="inline-block animate-wave delay-[2000ms]">e</span>
+          <span className="inline-block animate-wave delay-[2100ms]">...</span>
+        </p>
+
+      </div>
+    );
   }
 
   return (
