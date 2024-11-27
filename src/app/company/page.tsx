@@ -48,6 +48,8 @@ const Dashboard = () => {
           `https://us-central1-onit-439704.cloudfunctions.net/api_keys?company_id=${companyId}`
         );
         setApps(response.data.payload);
+        console.log("Response",response.data.payload)
+
       } catch (error) {
         console.error("Error fetching apps:", error);
         setApps([]);
@@ -227,11 +229,11 @@ const Dashboard = () => {
                     <div className="mt-4 grid grid-cols-2 gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
-                        <span>Created: {formatDate(app.created_at)}</span>
+                        <span>Created:{app.created_at}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
-                        <span>Expires: {formatDate(app.expires_at)}</span>
+                        <span>Expires: {app.expires_at}</span>
                       </div>
                     </div>
                   </div>

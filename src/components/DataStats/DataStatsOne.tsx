@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import Link from 'next/link';
 
 const WalletsGrid = () => {
   const wallets = [
@@ -25,7 +26,7 @@ const WalletsGrid = () => {
       <p className='text-2xl font-semibold mb-2'>Wallets</p>
       <div className="flex justify-between items-center mb-6">
         <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">
-          Add
+          <Link href="/createvirtualaccount">Add  A Wallet Account </Link>
         </button>
         <div className="relative">
           <input 
