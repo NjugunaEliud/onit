@@ -28,7 +28,7 @@ export default function Signin() {
         <div className="flex flex-row w-full items-center">
         <span className="block h-px w-full bg-stroke dark:bg-dark-3"></span>
         <div className="block w-full min-w-fit mb-10 bg-white px-3 text-center font-medium dark:bg-gray-dark">
-          sign in with email
+          sign in with phone number 
         </div>
         <span className="block h-px w-full bg-stroke dark:bg-dark-3"></span>
         </div>

@@ -36,7 +36,7 @@ export default function CreateVirtualBankAccountPage() {
         console.log("Response",response.data)
         Swal.fire({
           icon: "success",
-          title: "Bank Account Created",
+          title: "Virtual Bank Account Created",
           text: "The bank account has been successfully created.",
         });
         // setName("");

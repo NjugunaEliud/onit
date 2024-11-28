@@ -1,19 +1,33 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
 import Swal from "sweetalert2";
+import { Alert } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 export default function CreateBankAccountPage() {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
+  const [companyId, setCompnyId] = useState("");
   const [loading, setLoading] = useState(false);
+  const route = useRouter()
 
+
+  useEffect(() => {
+    const companyId = window.localStorage.getItem("companyId");
+    if(companyId){
+      setCompnyId(companyId)
+    }
+    else{
+      console.log("Failed to fetch company Id")
+    }
+  },[])
   const handleCreateBankAccount = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name.trim() || !code.trim()) {
+    if (!name.trim() || !code.trim() || !companyId.trim()) {
       Swal.fire({
         icon: "error",
         title: "Validation Error",
@@ -29,11 +43,12 @@ export default function CreateBankAccountPage() {
         {
           name,
           code,
+          companyId
         }
       );
 
       if (response.data.code == 201) {
-        console.log("Response",response.data)
+        console.log("Response", response.data)
         Swal.fire({
           icon: "success",
           title: "Bank Account Created",
@@ -41,6 +56,7 @@ export default function CreateBankAccountPage() {
         });
         // setName("");
         // setCode("");
+        route.push('/bankaccounts')
       }
     } catch (error) {
       console.error("Error creating bank account:", error);
@@ -62,6 +78,19 @@ export default function CreateBankAccountPage() {
             Create Bank Account
           </h1>
           <form onSubmit={handleCreateBankAccount} className="space-y-2">
+            <div className="flex flex-col">
+              <label htmlFor="name" className="text-sm font-medium text-gray-700">
+                Company ID
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={companyId}
+                onChange={(e) => setCompnyId(e.target.value)}
+                placeholder="Enter Comapny"
+                className="p-2  bg-gray-200 rounded"
+              />
+            </div>
             <div className="flex flex-col">
               <label htmlFor="name" className="text-sm font-medium text-gray-700">
                 Bank Name
@@ -90,9 +119,8 @@ export default function CreateBankAccountPage() {
             </div>
             <button
               type="submit"
-              className={`mt-6 w-full px-4 py-2 text-white rounded ${
-                loading ? "bg-blue-300" : "bg-blue-500 hover:bg-blue-600"
-              }`}
+              className={`mt-6 w-full px-4 py-2 text-white rounded ${loading ? "bg-blue-300" : "bg-blue-500 hover:bg-blue-600"
+                }`}
               disabled={loading}
             >
               {loading ? "Creating..." : "Create Account"}

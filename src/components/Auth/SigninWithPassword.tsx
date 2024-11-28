@@ -123,7 +123,7 @@ export default function SigninWithPhone() {
             onChange={(e) => setPhone(e.target.value)}
             placeholder="Enter your phone number"
             name="phone"
-            className="w-full rounded-lg border border-stroke bg-transparent py-[15px] pl-6 pr-11 font-medium text-dark outline-none focus:border-btnColor active:border-btnColor focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
+            className="w-full rounded-lg border border-stroke bg-transparent py-[15px] pl-6 pr-11 font-medium text-dark outline-none focus:border-[#056cf2] active:border-[#056cf2] focus-visible:shadow-none dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
           />
         </div>
       </div>
@@ -137,7 +137,7 @@ export default function SigninWithPhone() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Enter password"
-          className="w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition placeholder:text-dark-6 focus:border-btnColor active:border-btnColor disabled:cursor-default dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
+          className="w-full rounded-[7px] border-[1.5px] border-stroke bg-transparent px-5.5 py-3 text-dark outline-none transition placeholder:text-dark-6 focus:border-[#056cf2] active:border-[#056cf2] disabled:cursor-default dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary"
         />
         <span
           onClick={togglePasswordVisibility}
@@ -161,7 +161,7 @@ export default function SigninWithPhone() {
             className="peer sr-only"
           />
           <span
-            className={`mr-2.5 inline-flex h-5.5 w-5.5 items-center justify-center rounded-md border border-stroke bg-white text-white text-opacity-0 peer-checked:border-btnColor peer-checked:bg-btnColor peer-checked:text-opacity-100 dark:border-stroke-dark dark:bg-white/5 ${data.remember ? "bg-primary" : ""
+            className={`mr-2.5 inline-flex h-5.5 w-5.5 items-center justify-center rounded-md border border-stroke bg-white text-white text-opacity-0 peer-checked:border-[#056cf2] peer-checked:bg-[#056cf2] peer-checked:text-opacity-100 dark:border-stroke-dark dark:bg-white/5 ${data.remember ? "bg-primary" : ""
               }`}
           >
             <svg
@@ -187,7 +187,7 @@ export default function SigninWithPhone() {
         <button
           type="submit"
           onClick={(e) => handleLogin(e)}
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-btnColor p-4 font-medium text-white transition hover:bg-opacity-90"
+          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#056cf2] p-4 font-medium text-white transition hover:bg-opacity-90"
         >
           {!loading ? 'Sign In' : 'Signing in ...'}
         </button>

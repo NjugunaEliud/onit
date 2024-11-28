@@ -66,7 +66,7 @@ const Header = (props: {
           </Link> */}
         </div>
 
-        <div className="hidden xl:block">
+        <div className="hidden xl:block ">
           <div>
            <p className="text-lg dark:text-white"> Onit Bank Pay Bill APP</p>
           </div>
@@ -79,7 +79,7 @@ const Header = (props: {
             {/* <!-- Search Form --> */}
 
             {/* <!-- Dark Mode Toggle --> */}
-            <DarkModeSwitcher />
+            {/* <DarkModeSwitcher /> */}
             {/* <!-- Dark Mode Toggle --> */}
 
             {/* <!-- Notification Menu Area --> */}
