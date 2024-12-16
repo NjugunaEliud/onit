@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -50,23 +50,23 @@ const menuGroups = [
 
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
-          <path 
-            d="M19 3H5C3.89543 3 3 3.89543 3 5V21H21V5C21 3.89543 20.1046 3 19 3Z"
-            fill="currentColor"
-          />
-          <path 
-            d="M7 7H9V9H7V7ZM11 7H13V9H11V7ZM15 7H17V9H15V7Z
+            <path
+              d="M19 3H5C3.89543 3 3 3.89543 3 5V21H21V5C21 3.89543 20.1046 3 19 3Z"
+              fill="currentColor"
+            />
+            <path
+              d="M7 7H9V9H7V7ZM11 7H13V9H11V7ZM15 7H17V9H15V7Z
                M7 11H9V13H7V11ZM11 11H13V13H11V11ZM15 11H17V13H15V11Z
                M7 15H9V17H7V15ZM11 15H13V17H11V15ZM15 15H17V17H15V15Z"
-            fill="none"
-            stroke="white"
-            stroke-width="1"
-          />
-          <path
-            d="M10 17H14V21H10V17Z"
-            fill="white"
-          />
-        </svg>
+              fill="none"
+              stroke="white"
+              stroke-width="1"
+            />
+            <path
+              d="M10 17H14V21H10V17Z"
+              fill="white"
+            />
+          </svg>
 
 
         ),
@@ -77,19 +77,19 @@ const menuGroups = [
 
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
-          <path 
-            d="M12 3L3 7V8H21V7L12 3Z" 
-            fill="currentColor"
-          />
-          <path 
-            d="M5 10V17H7V10H5ZM9 10V17H11V10H9ZM13 10V17H15V10H13ZM17 10V17H19V10H17Z" 
-            fill="currentColor"
-          />
-          <path 
-            d="M4 19H20C20.5523 19 21 19.4477 21 20V21H3V20C3 19.4477 3.44772 19 4 19Z" 
-            fill="currentColor"
-          />
-        </svg>
+            <path
+              d="M12 3L3 7V8H21V7L12 3Z"
+              fill="currentColor"
+            />
+            <path
+              d="M5 10V17H7V10H5ZM9 10V17H11V10H9ZM13 10V17H15V10H13ZM17 10V17H19V10H17Z"
+              fill="currentColor"
+            />
+            <path
+              d="M4 19H20C20.5523 19 21 19.4477 21 20V21H3V20C3 19.4477 3.44772 19 4 19Z"
+              fill="currentColor"
+            />
+          </svg>
 
         ),
         label: " Bank Account",
@@ -118,37 +118,37 @@ const menuGroups = [
       {
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
-          <path 
-            d="M12 11C13.6569 11 15 9.65685 15 8C15 6.34315 13.6569 5 12 5C10.3431 5 9 6.34315 9 8C9 9.65685 10.3431 11 12 11Z" 
-            fill="currentColor"
-          />
-          <path 
-            d="M12 12C9.5 12 7 13.6 7 16V19H17V16C17 13.6 14.5 12 12 12Z" 
-            fill="currentColor"
-          />
-          
-          <path 
-            d="M6.5 10C7.88071 10 9 8.88071 9 7.5C9 6.11929 7.88071 5 6.5 5C5.11929 5 4 6.11929 4 7.5C4 8.88071 5.11929 10 6.5 10Z" 
-            fill="currentColor"
-            opacity="0.5"
-          />
-          <path 
-            d="M3 16.5C3 14.7 4.8 13.3 7 13V14.5C7 15.2 7.1 15.8 7.3 16.4C7.6 17.1 7.9 17.6 8.3 18H2V16.5H3Z" 
-            fill="currentColor"
-            opacity="0.5"
-          />
-          
-          <path 
-            d="M17.5 10C18.8807 10 20 8.88071 20 7.5C20 6.11929 18.8807 5 17.5 5C16.1193 5 15 6.11929 15 7.5C15 8.88071 16.1193 10 17.5 10Z" 
-            fill="currentColor"
-            opacity="0.5"
-          />
-          <path 
-            d="M21 16.5C21 14.7 19.2 13.3 17 13V14.5C17 15.2 16.9 15.8 16.7 16.4C16.4 17.1 16.1 17.6 15.7 18H22V16.5H21Z" 
-            fill="currentColor"
-            opacity="0.5"
-          />
-        </svg>
+            <path
+              d="M12 11C13.6569 11 15 9.65685 15 8C15 6.34315 13.6569 5 12 5C10.3431 5 9 6.34315 9 8C9 9.65685 10.3431 11 12 11Z"
+              fill="currentColor"
+            />
+            <path
+              d="M12 12C9.5 12 7 13.6 7 16V19H17V16C17 13.6 14.5 12 12 12Z"
+              fill="currentColor"
+            />
+
+            <path
+              d="M6.5 10C7.88071 10 9 8.88071 9 7.5C9 6.11929 7.88071 5 6.5 5C5.11929 5 4 6.11929 4 7.5C4 8.88071 5.11929 10 6.5 10Z"
+              fill="currentColor"
+              opacity="0.5"
+            />
+            <path
+              d="M3 16.5C3 14.7 4.8 13.3 7 13V14.5C7 15.2 7.1 15.8 7.3 16.4C7.6 17.1 7.9 17.6 8.3 18H2V16.5H3Z"
+              fill="currentColor"
+              opacity="0.5"
+            />
+
+            <path
+              d="M17.5 10C18.8807 10 20 8.88071 20 7.5C20 6.11929 18.8807 5 17.5 5C16.1193 5 15 6.11929 15 7.5C15 8.88071 16.1193 10 17.5 10Z"
+              fill="currentColor"
+              opacity="0.5"
+            />
+            <path
+              d="M21 16.5C21 14.7 19.2 13.3 17 13V14.5C17 15.2 16.9 15.8 16.7 16.4C16.4 17.1 16.1 17.6 15.7 18H22V16.5H21Z"
+              fill="currentColor"
+              opacity="0.5"
+            />
+          </svg>
 
         ),
         label: "Users",
@@ -157,29 +157,29 @@ const menuGroups = [
       {
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
-          <path 
-            d="M12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4ZM11 7.5V8H10V9H11V15H10V16H11V16.5H13V16H14V15H13V9H14V8H13V7.5H11ZM12 10C12.5523 10 13 10.4477 13 11V13C13 13.5523 12.5523 14 12 14C11.4477 14 11 13.5523 11 13V11C11 10.4477 11.4477 10 12 10Z"
-            fill="currentColor"
-          />
-          
-          <path 
-            d="M7 6L4 3L1 6"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            transform="translate(16, 3)"
-          />
-          
-          <path 
-            d="M7 0L4 3L1 0"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            transform="translate(16, 18)"
-          />
-        </svg>
+            <path
+              d="M12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4ZM11 7.5V8H10V9H11V15H10V16H11V16.5H13V16H14V15H13V9H14V8H13V7.5H11ZM12 10C12.5523 10 13 10.4477 13 11V13C13 13.5523 12.5523 14 12 14C11.4477 14 11 13.5523 11 13V11C11 10.4477 11.4477 10 12 10Z"
+              fill="currentColor"
+            />
+
+            <path
+              d="M7 6L4 3L1 6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              transform="translate(16, 3)"
+            />
+
+            <path
+              d="M7 0L4 3L1 0"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              transform="translate(16, 18)"
+            />
+          </svg>
 
         ),
         label: "Transactions",
@@ -219,7 +219,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const pathname = usePathname();
 
   const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
-
+  useEffect(() => {
+    const role = window.localStorage.getItem("role")
+    // alert(role);
+    if (role === 'user') {
+      menuGroups
+    }
+  }, [])
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
       <aside
@@ -282,12 +288,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
                 <ul className="mb-6 flex flex-col gap-2">
                   {group.menuItems.map((menuItem, menuIndex) => (
-                    <SidebarItem
+                    <div
                       key={menuIndex}
-                      item={menuItem}
-                      pageName={pageName}
-                      setPageName={setPageName}
-                    />
+                      className={`${(menuItem.route === "/company" || menuItem.route === "/users") &&
+                          window.localStorage.getItem("role") === "user"
+                          ? "hidden"
+                          : ""
+                        }`}
+                    >
+                      <SidebarItem
+                        item={menuItem}
+                        pageName={pageName}
+                        setPageName={setPageName}
+                      />
+                    </div>
                   ))}
                 </ul>
               </div>

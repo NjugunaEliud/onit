@@ -56,7 +56,7 @@ export default function SigninWithPhone() {
         phone: phone,
         password: password,
       });
-
+      console.log("Login details",response.data)
       if (response.data && response.data.payload && response.data.payload.token) {
         toast.success(`Welcome Back ${response.data.payload.user.role}!`, {
           icon: '👏',
@@ -73,6 +73,7 @@ export default function SigninWithPhone() {
         window.localStorage.setItem('email', response.data.payload.user.email);
         window.localStorage.setItem('phone', response.data.payload.user.phone);
         window.localStorage.setItem('role', response.data.payload.user.role);
+        window.localStorage.setItem('id', response.data.payload.user.id);
 
   
           router.push('/');

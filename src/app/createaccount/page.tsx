@@ -48,7 +48,7 @@ export default function CreateBankAccountPage() {
       );
 
       if (response.data.code == 201) {
-        console.log("Response", response.data)
+        console.log("Response Create account", response.data)
         Swal.fire({
           icon: "success",
           title: "Bank Account Created",
@@ -56,7 +56,7 @@ export default function CreateBankAccountPage() {
         });
         // setName("");
         // setCode("");
-        route.push('/bankaccounts')
+        route.push('/createvirtualaccount')
       }
     } catch (error) {
       console.error("Error creating bank account:", error);

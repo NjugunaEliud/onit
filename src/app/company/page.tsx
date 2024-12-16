@@ -4,6 +4,7 @@ import { Copy, Key, Trash2, Calendar } from "lucide-react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import DefaultLayout from "@/components/Layouts/DefaultLaout";
+import Link from "next/link";
 
 interface ApiKey {
   company_id: string;
@@ -23,7 +24,7 @@ interface CompanyInfo {
 }
 
 const formatDate = (dateString: string) => {
-  const date = new Date(dateString.replace(" ", "T")); 
+  const date = new Date(dateString.replace(" ", "T"));
   return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -48,7 +49,7 @@ const Dashboard = () => {
           `https://us-central1-onit-439704.cloudfunctions.net/api_keys?company_id=${companyId}`
         );
         setApps(response.data.payload);
-        console.log("Response",response.data.payload)
+        console.log("Response", response.data.payload)
 
       } catch (error) {
         console.error("Error fetching apps:", error);
@@ -62,6 +63,7 @@ const Dashboard = () => {
           `https://us-central1-onit-439704.cloudfunctions.net/company?company_id=${companyId}`
         );
         setCompanyInfo(response.data.payload);
+        console.error("Companies:", response.data.payload);
       } catch (error) {
         console.error("Error fetching company info:", error);
       }
@@ -124,21 +126,21 @@ const Dashboard = () => {
 
   return (
     <DefaultLayout>
+      <Link href='/createcompany' className="bg-blue-500 px-4 py-2 text-white rounded-md p-24">Create Company</Link>
       <div className=" mx-auto bg-white p-6 rounded-lg shadow-md">
         {/* Tabs */}
+
         <div className="flex border-b mb-6">
           <button
-            className={`py-2 px-4 text-sm font-medium ${
-              activeTab === "companyInfo" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"
-            }`}
+            className={`py-2 px-4 text-sm font-medium ${activeTab === "companyInfo" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"
+              }`}
             onClick={() => setActiveTab("companyInfo")}
           >
             Company Info
           </button>
           <button
-            className={`py-2 px-4 text-sm font-medium ${
-              activeTab === "apiKeys" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"
-            }`}
+            className={`py-2 px-4 text-sm font-medium ${activeTab === "apiKeys" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"
+              }`}
             onClick={() => setActiveTab("apiKeys")}
           >
             API Keys
@@ -203,8 +205,8 @@ const Dashboard = () => {
                         </h3>
                       </div>
                       <span className="inline-block mt-2 px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                          Active
-                        </span>
+                        Active
+                      </span>
                       <button
                         onClick={() => handleDeleteApp(app.company_id)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-md"

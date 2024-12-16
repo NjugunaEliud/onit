@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search } from 'lucide-react';
+import { Router, Search } from 'lucide-react';
 import Link from 'next/link';
 import axios from 'axios';
 
@@ -34,7 +34,7 @@ const WalletsGrid = () => {
       <p className='text-2xl font-semibold mb-2'>Wallets</p>
       <div className="flex justify-between items-center mb-6">
         <button className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50">
-          <Link href="/createvirtualaccount">Add  A Wallet Account </Link>
+          <Link href="/createwallet">Add  A Wallet Account </Link>
         </button>
         <div className="relative">
           <input
