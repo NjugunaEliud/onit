@@ -24,48 +24,96 @@ interface CompanyInfo {
 }
 
 const formatDate = (dateString: string) => {
-  const date = new Date(dateString.replace(" ", "T"));
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  try {
+    const date = new Date(dateString.replace(" ", "T"));
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch (error) {
+    return dateString; // Return original string if parsing fails
+  }
 };
 
-const Dashboard = () => {
+interface KeyDisplayProps {
+  label: string;
+  value?: string;
+  onCopy: () => void;
+}
+
+const KeyDisplay: React.FC<KeyDisplayProps> = ({ label, value, onCopy }) => {
+  const maskKey = (key?: string) => {
+    if (!key) return "N/A";
+    return key.length > 16 ? `${key.slice(0, 8)}...${key.slice(-8)}` : key;
+  };
+
+  return (
+    <div>
+      <h3 className="text-sm font-medium text-gray-600">{label}</h3>
+      <div className="flex items-center justify-between gap-4">
+        <p className="text-lg font-mono">{maskKey(value)}</p>
+        <button 
+          onClick={onCopy} 
+          className="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+          disabled={!value}
+        >
+          <Copy className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"companyInfo" | "apiKeys">("companyInfo");
   const [apps, setApps] = useState<ApiKey[]>([]);
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const companyId = window.localStorage.getItem("companyId");
+    if (!companyId) {
+      setError("No company ID found. Please ensure you're properly logged in.");
+      return;
+    }
 
     const fetchApps = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get(
+        const response = await axios.get<{ payload: ApiKey[] }>(
           `https://us-central1-onit-439704.cloudfunctions.net/api_keys?company_id=${companyId}`
         );
-        setApps(response.data.payload);
-        console.log("Response", response.data.payload)
-
+        if (response.data && Array.isArray(response.data.payload)) {
+          setApps(response.data.payload);
+        } else {
+          setError("Invalid API response format");
+        }
       } catch (error) {
         console.error("Error fetching apps:", error);
+        setError("Failed to fetch API keys");
         setApps([]);
+      } finally {
+        setLoading(false);
       }
     };
 
     const fetchCompanyInfo = async () => {
       try {
-        const response = await axios.get(
+        const response = await axios.get<{ payload: CompanyInfo }>(
           `https://us-central1-onit-439704.cloudfunctions.net/company?company_id=${companyId}`
         );
-        setCompanyInfo(response.data.payload);
-        console.error("Companies:", response.data.payload);
+        if (response.data && response.data.payload) {
+          setCompanyInfo(response.data.payload);
+        } else {
+          setError("Invalid company info response format");
+        }
       } catch (error) {
         console.error("Error fetching company info:", error);
+        setError("Failed to fetch company information");
       }
     };
 
@@ -75,15 +123,18 @@ const Dashboard = () => {
 
   const handleAddApp = async () => {
     const companyId = window.localStorage.getItem("companyId");
+    if (!companyId) {
+      showToast("error", "No company ID found");
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await axios.post(
+      const response = await axios.post<ApiKey>(
         "https://us-central1-onit-439704.cloudfunctions.net/api_keys",
-        {
-          company_id: companyId,
-        }
+        { company_id: companyId }
       );
-      setApps([...apps, response.data]);
+      setApps(prevApps => [...prevApps, response.data]);
       showToast("success", "API Keys Generated Successfully!");
     } catch (error) {
       console.error("Error creating new app:", error);
@@ -94,19 +145,36 @@ const Dashboard = () => {
   };
 
   const handleDeleteApp = async (companyId: string) => {
-    try {
-      await axios.delete(
-        `https://us-central1-onit-439704.cloudfunctions.net/api_keys?company_id=${companyId}`
-      );
-      setApps(apps.filter((app) => app.company_id !== companyId));
-      showToast("success", "API Key deleted successfully");
-    } catch (error) {
-      console.error("Error deleting app:", error);
-      showToast("error", "Failed to delete API key");
+    const confirmDelete = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!"
+    });
+
+    if (confirmDelete.isConfirmed) {
+      try {
+        await axios.delete(
+          `https://us-central1-onit-439704.cloudfunctions.net/api_keys?company_id=${companyId}`
+        );
+        setApps(prevApps => prevApps.filter(app => app.company_id !== companyId));
+        showToast("success", "API Key deleted successfully");
+      } catch (error) {
+        console.error("Error deleting app:", error);
+        showToast("error", "Failed to delete API key");
+      }
     }
   };
 
   const copyToClipboard = (text: string, label: string) => {
+    if (!text) {
+      showToast("error", "No value to copy");
+      return;
+    }
+
     navigator.clipboard
       .writeText(text)
       .then(() => showToast("success", `${label} copied to clipboard!`))
@@ -124,30 +192,51 @@ const Dashboard = () => {
     });
   };
 
+  // if (error) {
+  //   return (
+  //     <DefaultLayout>
+  //       <div className="text-center p-6">
+  //         <p className="text-red-600">{error}</p>
+  //         <Link href="/createcompany" className="mt-4 inline-block bg-blue-500 px-4 py-2 text-white rounded-md">
+  //           Create Company
+  //         </Link>
+  //       </div>
+  //     </DefaultLayout>
+  //   );
+  // }
+
   return (
     <DefaultLayout>
-      <Link href='/createcompany' className="bg-blue-500 px-4 py-2 text-white rounded-md p-24">Create Company</Link>
-      <div className=" mx-auto bg-white p-6 rounded-lg shadow-md">
-        {/* Tabs */}
+      <div className="mb-6">
+        {/* <Link href="/createcompany" className="bg-blue-500 px-4 py-2 text-white rounded-md">
+          Create Company
+        </Link> */}
+      </div>
 
+      <div className="mx-auto bg-white p-6 rounded-lg shadow-md">
         <div className="flex border-b mb-6">
           <button
-            className={`py-2 px-4 text-sm font-medium ${activeTab === "companyInfo" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"
-              }`}
+            className={`py-2 px-4 text-sm font-medium ${
+              activeTab === "companyInfo" 
+                ? "border-b-2 border-blue-500 text-blue-600" 
+                : "text-gray-500"
+            }`}
             onClick={() => setActiveTab("companyInfo")}
           >
             Company Info
           </button>
           <button
-            className={`py-2 px-4 text-sm font-medium ${activeTab === "apiKeys" ? "border-b-2 border-blue-500 text-blue-600" : "text-gray-500"
-              }`}
+            className={`py-2 px-4 text-sm font-medium ${
+              activeTab === "apiKeys" 
+                ? "border-b-2 border-blue-500 text-blue-600" 
+                : "text-gray-500"
+            }`}
             onClick={() => setActiveTab("apiKeys")}
           >
             API Keys
           </button>
         </div>
 
-        {/* Tab Content */}
         {activeTab === "companyInfo" && (
           <div>
             <h2 className="text-xl font-semibold mb-4">Company Information</h2>
@@ -175,7 +264,9 @@ const Dashboard = () => {
                 </div>
               </div>
             ) : (
-              <p>Loading company information...</p>
+              <div className="flex justify-center items-center h-32">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              </div>
             )}
           </div>
         )}
@@ -202,6 +293,7 @@ const Dashboard = () => {
                       <div>
                         <h3 className="text-lg font-semibold flex items-center gap-2">
                           <Key className="w-5 h-5" />
+                          API Key
                         </h3>
                       </div>
                       <span className="inline-block mt-2 px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
@@ -231,7 +323,7 @@ const Dashboard = () => {
                     <div className="mt-4 grid grid-cols-2 gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
-                        <span>Created:{app.created_at}</span>
+                        <span>Created: {app.created_at}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
@@ -242,10 +334,16 @@ const Dashboard = () => {
                 </div>
               ))}
 
-              {apps.length === 0 && (
+              {apps.length === 0 && !loading && (
                 <div className="border-2 border-dashed rounded-lg p-12 text-center">
                   <Key className="w-8 h-8 text-gray-300 mx-auto" />
                   <p className="mt-4 text-gray-500">No API keys found.</p>
+                </div>
+              )}
+
+              {loading && (
+                <div className="flex justify-center items-center h-32">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                 </div>
               )}
             </div>
@@ -253,22 +351,6 @@ const Dashboard = () => {
         )}
       </div>
     </DefaultLayout>
-  );
-};
-
-const KeyDisplay = ({ label, value, onCopy }: { label: string; value: string; onCopy: () => void }) => {
-  const maskKey = (key: string) => key.length > 16 ? `${key.slice(0, 8)}...${key.slice(-8)}` : key;
-
-  return (
-    <div>
-      <h3 className="text-sm font-medium text-gray-600">{label}</h3>
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-lg font-mono">{maskKey(value)}</p>
-        <button onClick={onCopy} className="p-2 text-blue-600 hover:bg-blue-50 rounded-md">
-          <Copy className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
   );
 };
 
